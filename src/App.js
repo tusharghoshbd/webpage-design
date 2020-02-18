@@ -19,9 +19,12 @@ function App() {
             </div>
             <div  className="login-form">
                 <form>
-                    <div className="form-group">
+                    <div className="form-group  has-error has-feedback">
                         <label htmlFor="email"> Email</label>
                         <input type="text" name="email" className="form-control" id="email" />
+                        <div class="help-block">
+        Please provide a valid city.
+      </div>
                     </div>
                     <div className="form-group">
                         <label htmlFor="password"> Password</label>
