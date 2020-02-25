@@ -8,13 +8,55 @@ export default class App extends Component {
         super(props);
         this.state = {
             email: "",
-            password:""
+            password:"",
+            formValidationMsg : {
+                email: '',
+                password:''
+            },
+            formValidation: false
         }
     }
 
     onClickHandler = (e)=>{
-        this.setState( { [e.target.name]: e.target.value} )
+        let name = e.target.name;
+        let value = e.target.value;
+        this.setState( { [name]: value}, ()=>{
+            if(name == 'email'){
+                let emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+                this.setState({ 
+                    formValidationMsg: { 
+                        ...this.state.formValidationMsg,
+                        email : emailValid ? '' : 'Email is invalid'
+                    } 
+                }, ()=>{this.validateForm()});
+            }
+            if(name == 'password'){
+                this.setState({ 
+                    formValidationMsg: { 
+                        ...this.state.formValidationMsg,
+                        password : value.length >= 6 ? '' : 'Password is too short'
+                    } 
+                }, ()=>{this.validateForm()});
+            }
+        } )
     }
+
+    validateForm = () => {
+        if(this.state.email != '' && this.state.password !== ''){
+            if(this.state.formValidationMsg.email == '' && this.state.formValidationMsg.password == ''){
+                this.setState({formValidation : true});
+            }
+            else{
+                this.setState({formValidation : false});
+            }
+        }
+        else{
+            this.setState({formValidation : false});
+        }
+    }
+      
+
+
     onLoginSubmit = (e)=>{
         e.preventDefault();
         console.log(this.state);
@@ -35,18 +77,22 @@ export default class App extends Component {
                     </div>
                     <div  className="login-form">
                         <form  onSubmit={this.onLoginSubmit}>
-                            <div className="form-group  has-error has-feedback">
+                            <div className={  this.state.formValidationMsg.email == '' ? 'form-group': 'form-group has-feedback has-error' }>
                                 <label htmlFor="email"> Email </label>
                                 <input type="text" onChange={ e => this.onClickHandler(e) } name="email" value={ this.state.email } className="form-control" id="email" />
                                 <div className="help-block">
-                                    Please provide a valid city.
+                                    {this.state.formValidationMsg.email}
                                 </div>
                             </div>
-                            <div className="form-group">
+                            <div className={ this.state.formValidationMsg.password == '' ? 'form-group ': 'form-group has-feedback has-error' }>
                                 <label htmlFor="password"> Password</label>
                                 <input type="password" name="password" onChange={(e)=>{this.onClickHandler(e)}} value={this.state.password} className="form-control" id="password" />
+                                <div className="help-block">
+                                    {this.state.formValidationMsg.password}
+                                </div>
                             </div>
-                            <button type="submit" className="btn btn-default"> Login </button>
+                            
+                            <button type="submit" disabled={!this.state.formValidation}  className="btn btn-default"> Login </button>
                         </form>
                     </div>
                 
